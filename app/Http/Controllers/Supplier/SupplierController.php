@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Supplier;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Supplier\Supplier;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class SupplierController extends Controller{
 
@@ -13,51 +15,85 @@ class SupplierController extends Controller{
     }
 
     public function index(){
-        $suppliers = Supplier::orderBy('supplier_id', 'desc')->get();
-        return view('supplier.supplier_info', ['suppliers' => $suppliers]);
+        return view('supplier.supplier_info');
     }
 
-    public function supplierNew(){
-        return view('supplier.supplier_new');   
+    public function supplierList(Request $request){
+        $data = Supplier::select(['supplier_id', 'supplier_name', 'contact_number', 'address']); 
+        return datatables()->of($data)->make(true);
     }
 
     public function addSupplier(Request $request){
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'supplier_name'  => 'required|string|max:150|unique:suppliers',
             'contact_number' => 'required|numeric|unique:suppliers'
         ]);
 
-        $supplier = new Supplier();
-        $supplier->supplier_name  = $request->supplier_name;
-        $supplier->contact_number = $request->contact_number;
-        $supplier->address        = $request->address;
-        $supplier->created_by     = 1;
-        $supplier->save();
-        return redirect('supplier-info')->with('success', 'Save successful !');
+        if($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()]);
+        }
+
+        DB::beginTransaction();
+
+        try{
+            $supplier = new Supplier();
+            $supplier->supplier_name  = $request->supplier_name;
+            $supplier->contact_number = $request->contact_number;
+            $supplier->address        = $request->address;
+            $supplier->created_by     = 1;
+            $supplier->save();
+
+            DB::commit();
+            return response()->json(['success' => 'Save Successful !']);
+        } 
+        catch (Exception $e){
+            DB::rollBack();
+            return response()->json(['error' => 'Save Faild !']);
+        }
     }
 
-    public function supplierEdit($supplier_id){
-        $supplier = Supplier::where('supplier_id', $supplier_id)->first();
-        return view('supplier.supplier_edit', ['supplier' => $supplier]);   
-    }
-
-    public function updateSupplier(Request $request){
-        $request->validate([
+    public function updateSupplier(Request $request, $id){
+        $validator = Validator::make($request->all(), [
             'supplier_name'  => 'required|string|max:150',
             'contact_number' => 'required|numeric'
         ]);
 
-        Supplier::where('supplier_id', $request->supplier_id)
-                ->update(['supplier_name'  => $request->supplier_name, 
-                          'contact_number' => $request->contact_number,
-                          'address'        => $request->address,
-                          'updated_by'     => 1
-                        ]);
-        return redirect('supplier-info')->with('success', 'Update successful !');
+        if($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()]);
+        }
+
+        DB::beginTransaction();
+
+        try{
+            $supplier = Supplier::find($id);
+            $supplier->supplier_name  = $request->supplier_name;
+            $supplier->contact_number = $request->contact_number;
+            $supplier->address        = $request->address;
+            $supplier->created_by     = 1;
+            $supplier->save();
+
+            DB::commit();
+            return response()->json(['success' => 'Save Successful !']);
+        } 
+        catch (Exception $e){
+            DB::rollBack();
+            return response()->json(['error' => 'Save Faild !']);
+        }
     }
 
-    public function supplierDelete($supplier_id){
-        Supplier::where('supplier_id', $supplier_id)->delete();
-        return redirect('supplier-info')->with('success', 'Delete successful !');
+    public function supplierDelete($id){
+        DB::beginTransaction();
+
+        try{
+            $supplier = Supplier::find($id);
+            $supplier->delete();
+
+            DB::commit();
+            return response()->json(['success' => 'Delete Successful !']);
+        } 
+        catch (Exception $e){
+            DB::rollBack();
+            return response()->json(['error' => 'Delete Faild !']);
+        }
     }
 }

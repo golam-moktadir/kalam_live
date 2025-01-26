@@ -38,11 +38,12 @@ Route::get('product-list', [App\Http\Controllers\Product\ProductController::clas
 Route::post('product-add', [App\Http\Controllers\Product\ProductController::class, 'addProduct']);
 Route::post('product-update/{id}', [App\Http\Controllers\Product\ProductController::class, 'updateProduct']);
 Route::get('product-delete/{id}', [App\Http\Controllers\Product\ProductController::class, 'productDelete']);
+
 Route::get('supplier-info', [App\Http\Controllers\Supplier\SupplierController::class, 'index']);
-Route::get('supplier-new', [App\Http\Controllers\Supplier\SupplierController::class, 'supplierNew']);
+Route::get('supplier-list', [App\Http\Controllers\Supplier\SupplierController::class, 'supplierList'])->name('supplier-list');
 Route::post('supplier-add', [App\Http\Controllers\Supplier\SupplierController::class, 'addSupplier']);
 Route::get('supplier-edit/{id}', [App\Http\Controllers\Supplier\SupplierController::class, 'supplierEdit']);
-Route::post('supplier-update', [App\Http\Controllers\Supplier\SupplierController::class, 'updateSupplier']);
+Route::post('supplier-update/{id}', [App\Http\Controllers\Supplier\SupplierController::class, 'updateSupplier']);
 Route::get('supplier-delete/{id}', [App\Http\Controllers\Supplier\SupplierController::class, 'supplierDelete']);
 
 Route::get('product-purchase', [App\Http\Controllers\Purchase\ProductPurchaseController::class, 'index']);
