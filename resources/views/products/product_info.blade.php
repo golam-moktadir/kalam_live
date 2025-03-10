@@ -6,11 +6,11 @@
    <table id="product-table" class="table table-striped table-bordered">
       <thead>
          <tr>
-            <th>#</th>
-            <th>Product Name</th>
-            <th>Whole Sale</th>
-            <th>Retail</th>
-            <th>Action</th>
+            <th class="text-center">#</th>
+            <th class="text-center">Product Name</th>
+            <th class="text-center">Whole Sale</th>
+            <th class="text-center">Retail</th>
+            <th class="text-center">Action</th>
          </tr>
       </thead>
    </table>
@@ -75,17 +75,18 @@ $(document).ready(function() {
                   }
                },
             {data: 'product_name'},
-            {data: 'whole_sale', className: 'text-right'},
-            {data: 'retail', className: 'text-right'},
+            {data: 'whole_sale', className: 'text-end'},
+            {data: 'retail', className: 'text-end'},
             {
                data: null,
                orderable: false,
                searchable: false,
+               className: 'text-center',
                render: function(data, type, row){
                let action_links = "";
                action_links += " <a href='javascript:void(0)' class='btn btn-sm btn-success edit-btn'><i class='fa-solid fa-pen-to-square'></i></a>";
 
-               action_links += " <a href='javascript:void(0)' class='btn btn-sm btn-danger delete-btn'><i class='fa-solid fa-trash'></i></button>";
+               action_links += " <a href='javascript:void(0)' class='btn btn-sm btn-danger delete-btn'><i class='fa-solid fa-trash'></i></a>";
                return action_links;
             }
          }

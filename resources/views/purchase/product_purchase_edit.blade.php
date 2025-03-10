@@ -59,14 +59,14 @@
                <select class="form-select" name="supplier_id" id="supplier_id">
                   <option value="">-- Select Supplier Name --</option>
                   @foreach($suppliers as $supplier)
-                  <option value="{{ $supplier->supplier_id }}">{{ $supplier->supplier_name }}</option>
+                  <option value="{{ $supplier->supplier_id }}" {{ $single->supplier_id == $supplier->supplier_id ? 'selected' : ''}}>{{ $supplier->supplier_name }}</option>
                   @endforeach
                </select>
                <p id="error_supplier_name" class="text-danger"></p>
             </div>
             <div class="col-md-4">
                <label for="purchase_date" class="form-label">Purchase Date</label><span class="text-danger"> *</span>
-               <input type="text" name="purchase_date" id="purchase_date" class="form-control" autocomplete="off" readonly>
+               <input type="text" name="purchase_date" id="purchase_date" class="form-control" autocomplete="off" readonly value="{{ $single->purchase_date }}">
                <p id="error_purchase_date" class="text-danger"></p>           
             </div>
          </div>
@@ -90,14 +90,34 @@
                      </tr>
                   </thead>
                   <tbody>
-
+                  @php 
+                  $i = 0;
+                  $total_qty = 0; 
+                  $grand_total_price = 0;
+                  @endphp
+                  @foreach($single->details as $row)
+                     @php 
+                     $i++;
+                     $total_qty += $row->item_qty;
+                     $grand_total_price += $row->total_price;
+                     @endphp                        
+                     <tr>
+                        <td class='text-center'>{{$i}}</td>
+                        <td class='d-none'>{{$row->product_id}}</td>
+                        <td>{{$row->product->product_name}}</td>
+                        <td class="text-center editable item_qty">{{$row->item_qty}}</td>
+                        <td class="text-end editable item_price">{{$row->item_price}}</td>
+                        <td class="text-end total_price">{{$row->total_price}}</td>
+                        <td class='text-center'><a href='javascript:void(0)' class='btn btn-sm btn-danger delete-btn'><i class='fa-solid fa-trash'></i></a></td>
+                     </tr>
+                     @endforeach
                   </tbody>
                   <tfoot>
                      <tr>
                         <td colspan="2">Total</td>
-                        <td id="total_qty" align="center"></td>
+                        <td id="total_qty" align="center">{{ number_format($total_qty, 2, '.', '') }}</td>
                         <td></td>
-                        <td id="grand_total_price" align="right"></td>
+                        <td id="grand_total_price" align="right">{{ number_format($grand_total_price, 2, '.', '') }}</td>
                         <td></td>
                      </tr>
                   </tfoot>
@@ -315,7 +335,7 @@
       });
 
       $.ajax({
-         url: 'product-purchase-add', 
+         url: "/product-purchase-update/"+{{ $single->purchase_id }}, 
          type: 'post',
          data: {supplier_id: supplier_id, purchase_date: purchase_date, item_id: item_id, item_qty: item_qty, item_price: item_price, total_price: total_price},
          success: function(response){

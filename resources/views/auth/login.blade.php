@@ -6,7 +6,7 @@
     <img src="{{asset('build/assets/img/logo.jpg')}}" class="card-img-top">
     <h5 class="card-header text-center text-secondary">Samit Enterprise</h5>
     <div class="card-body">
-        <form method="POST" action="{{ url('login-check') }}">
+        <form method="POST" action="{{ url('login') }}">
         @csrf
         <div class="mb-3">
             <label for="email" class="form-label">Email address</label>

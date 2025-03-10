@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,7 +17,22 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
+Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect('/home');
+    }
+    else{
+        return redirect('/login');
+    }
+});
 Auth::routes();
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/register', function(){
+        return view('auth.register');
+    })->name('register');
+    Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+});
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -47,10 +62,9 @@ Route::post('supplier-update/{id}', [App\Http\Controllers\Supplier\SupplierContr
 Route::get('supplier-delete/{id}', [App\Http\Controllers\Supplier\SupplierController::class, 'supplierDelete']);
 
 Route::get('product-purchase', [App\Http\Controllers\Purchase\ProductPurchaseController::class, 'index']);
+Route::get('product-purchase-list', [App\Http\Controllers\Purchase\ProductPurchaseController::class, 'productPurchaseList'])->name('product-purchase-list');
 Route::get('product-purchase-new', [App\Http\Controllers\Purchase\ProductPurchaseController::class, 'productPurchaseNew']);
 Route::post('product-purchase-add', [App\Http\Controllers\Purchase\ProductPurchaseController::class, 'addProductPurchase']);
-
-
-
-
-
+Route::get('product-purchase-edit/{id}', [App\Http\Controllers\Purchase\ProductPurchaseController::class, 'productPurchaseEdit']);
+Route::post('product-purchase-update/{id}', [App\Http\Controllers\Purchase\ProductPurchaseController::class, 'updateProductPurchase']);
+Route::get('product-purchase-delete/{id}', [App\Http\Controllers\Purchase\ProductPurchaseController::class, 'deleteProductPurchase']);

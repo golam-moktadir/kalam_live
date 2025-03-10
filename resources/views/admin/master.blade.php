@@ -69,4 +69,4 @@
     @include('admin.footer')
     <!-- Footer End -->
   </body>
-</html
+</html>
